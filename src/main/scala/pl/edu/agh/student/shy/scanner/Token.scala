@@ -1,4 +1,4 @@
-package pl.edu.agh.student.shy.parser
+package pl.edu.agh.student.shy.scanner
 
 trait Token {
   def allowedNext(c: Char, cache: String = ""): Boolean

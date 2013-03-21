@@ -1,8 +1,8 @@
 import org.scalatest.FunSuite
-import pl.edu.agh.student.shy.parser.ini.IniParser
-import pl.edu.agh.student.shy.parser.ini._
+import pl.edu.agh.student.shy.scanner.ini.IniParser
+import pl.edu.agh.student.shy.scanner.ini._
  
-class IniParserSuite extends FunSuite {
+class IniScannerSuite extends FunSuite {
  
   test("parses simple synthetic file") {
 	

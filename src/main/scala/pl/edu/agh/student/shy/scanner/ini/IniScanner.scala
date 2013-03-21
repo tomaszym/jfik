@@ -1,6 +1,6 @@
-package pl.edu.agh.student.shy.parser.ini
+package pl.edu.agh.student.shy.scanner.ini
 
-import pl.edu.agh.student.shy.parser._
+import pl.edu.agh.student.shy.scanner._
 
 case object Identifier extends Token {
   def allowedNext(c:Char, cache: String = "") = cache match {
@@ -14,9 +14,9 @@ case object BracketR extends Token { def allowedNext(c: Char, cache: String) = c
 case object Eq       extends Token { def allowedNext(c: Char, cache: String) = c == '=' }
 case object Error    extends Token { def allowedNext(c: Char, cache: String) = cache == "" }
 
-object IniParser extends Parser {
+object IniParser extends Scanner {
 
-  val priority = Identifier :: Number:: BracketL :: BracketR :: Eq :: Nil
+  val tokens = Identifier :: Number:: BracketL :: BracketR :: Eq :: Nil
 
 
 
