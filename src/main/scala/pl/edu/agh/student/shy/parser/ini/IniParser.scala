@@ -16,13 +16,7 @@ case object Error    extends Token { def allowedNext(c: Char, cache: String) = c
 
 object IniParser extends Parser {
 
-  val states = Identifier :: Number:: BracketL :: BracketR :: Eq :: Nil
-
-  var text = "[section] label = 12"
-  
-
-  def test = parse(text)
-
+  val priority = Identifier :: Number:: BracketL :: BracketR :: Eq :: Nil
 
 
 
