@@ -4,11 +4,11 @@ import pl.edu.agh.student.shy.scanner._
 
 case object Identifier extends Token {
   def allowedNext(c:Char, cache: String = "") = cache match {
-      case "" => smallCaps_?(c)
-      case smth => smallCaps_?(c) || number_?(c)
+      case "" => c.isLower
+      case smth => c.isLower || c.isDigit
     }
 }
-case object Number   extends Token { def allowedNext(c: Char, cache: String) = number_?(c) }
+case object Number   extends Token { def allowedNext(c: Char, cache: String) = c.isDigit }
 case object BracketL extends Token { def allowedNext(c: Char, cache: String) = c == '[' }
 case object BracketR extends Token { def allowedNext(c: Char, cache: String) = c == ']' }
 case object Eq       extends Token { def allowedNext(c: Char, cache: String) = c == '=' }
