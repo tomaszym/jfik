@@ -3,21 +3,32 @@ package pl.edu.agh.student.shy.scanner.ini
 import pl.edu.agh.student.shy.scanner._
 
 case object Identifier extends Token {
-  def allowedNext(c:Char, cache: String = "") = cache match {
-      case "" => c.isLower
-      case smth => c.isLower || c.isDigit
+  val t: Transition = (c, cache, state) => cache match {
+      case "" => if(c.isLetter) Some(state) else None
+      case smth => if(c.isLetter || c.isDigit) Some(state) else None
     }
 }
-case object Number   extends Token { def allowedNext(c: Char, cache: String) = c.isDigit }
-case object BracketL extends Token { def allowedNext(c: Char, cache: String) = c == '[' }
-case object BracketR extends Token { def allowedNext(c: Char, cache: String) = c == ']' }
-case object Eq       extends Token { def allowedNext(c: Char, cache: String) = c == '=' }
-case object Error    extends Token { def allowedNext(c: Char, cache: String) = cache == "" }
+case object Number extends Token { 
+  val t: Transition = (c, str, state) => if(c.isDigit) Some(state) else None }
 
-object IniParser extends Scanner {
+case object BracketL extends Token {
+  val t: Transition = (c, str, state) => if(c == '[') Some(state) else None }
 
-  val tokens = Identifier :: Number:: BracketL :: BracketR :: Eq :: Nil
+case object BracketR extends Token {
+  val t: Transition = (c, str, state) => if(c == ']') Some(state) else None }
 
+case object Eq extends Token {
+  val t: Transition = (c, str, state) => if(c == '=') Some(state) else None }
 
+case object Error extends Token {
+  val t: Transition = (c, str, state) => if(str == "") Some(state) else None }
 
-}
+case object InitialState extends State
+
+object IniParser extends {
+
+  val tokens = Identifier :: Number:: BracketL :: BracketR :: Eq :: Error :: Nil
+
+  val initial = InitialState
+
+} with Scanner

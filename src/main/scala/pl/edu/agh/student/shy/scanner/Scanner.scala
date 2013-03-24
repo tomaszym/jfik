@@ -12,25 +12,40 @@ trait Scanner {
   
   def parse(str: String) = parseStep(str.tail, str.head, "", initialTokens, List())
   
-  
-  private def parseStep(text: String, next: Char, cache: String, allowedBefore: List[(Token, State)], acc: List[(Lexeme, Token)] ): List[(Lexeme, Token)] = {
-    
+  type TokenAtState = (Token, State)
+  /**
+   * @param text more to be scanned
+   * @param next current character
+   * @param allowedBefore current state of scanner
+   * @param acc accumulator with scanned tokens
+   */
+  private def parseStep(text: String, next: Char, cache: String, allowedBefore: List[TokenAtState], acc: List[(Lexeme, Token)] ): List[(Lexeme, Token)] = {
+     /**
+     * Helper method for applying restrictions.
+     * @param c next character
+     * @param cache 
+     * @param tokens list of tokens with states to be filtered
+     */
+    def filterTokens(c: Char, cache: String, tokens: List[TokenAtState]) = {
+      tokens map { case (token, state) =>
+          (token, token.t(next, cache, state)) 
+        } filter { case (t, s) => s.isDefined } map { case (t,s) => (t, s.get)} 
+    }
+    println(allowedBefore)
     text match {
-      case "" => acc.reverse // TODO bufor
+      case "" => ((cache+next, allowedBefore.head._1) :: acc).reverse
       case more => {
         /* generate possible steps: */
-        val allowed = allowedBefore map { case (token, state) =>
-          (token, token.allowedNext(next, cache)(state)) 
-        } filter { case (t, s) => s.isDefined }
-        
+        val allowed = filterTokens(next, cache, allowedBefore)
         allowed match {
           // append new token, clear cache, reset states
-          case Nil => parseStep(text.tail, text.head, "", state, tokens, (cache + next, activeTokens.head) :: acc)
+          case Nil => parseStep(text.tail, text.head, next.toString, filterTokens(next, "", initialTokens), (cache, allowedBefore.head._1) :: acc)
                     
-          case (token, state) :: tail => parseStep(text.tail, text.head, cache + next, state, allowed, acc ) 
+          case tokens => parseStep(text.tail, text.head, cache + next, tokens, acc ) 
         }
       }
     }
+
   }
 
 }

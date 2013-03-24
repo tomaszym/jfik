@@ -4,7 +4,7 @@ import pl.edu.agh.student.shy.scanner.ini._
  
 class IniScannerSuite extends FunSuite {
  
-  test("parses simple synthetic file") {
+  test("parses simple CORRECT synthetic file") {
 	
     val txt = "[section]label=12"
     val res = IniParser.parse(txt)
@@ -13,10 +13,23 @@ class IniScannerSuite extends FunSuite {
         ("[", BracketL),
         ("section", Identifier),
         ("]", BracketR),
-        ("label", Number),
+        ("label", Identifier),
         ("=", Eq),
         ("12", Number)
     ))
+  }
+  test("returns error on incorrect string") {
+	
+    val txt = """[section]label="asdf""" // missing "
+    val res = IniParser.parse(txt)
     
+    assert(res === List(
+        ("[", BracketL),
+        ("section", Identifier),
+        ("]", BracketR),
+        ("label", Identifier),
+        ("=", Eq),
+        (""""asdf""", Error)
+    ))
   }
 }
