@@ -31,6 +31,10 @@ trait Scanner {
           (token, token.t(next, cache, state)) 
         } filter { case (t, s) => s.isDefined } map { case (t,s) => (t, s.get)} 
     }
+    def feedStates(c: Char, states: List[TokenAtState]): List[TokenAtState] =
+      states .map    { case (t, s) => (t, s.eat_?(c))} 
+             .filter { case (t, opt) => opt.isDefined } 
+             .map    { case (t, opt) => (t, opt.get)}
 
     text match {
       case "" => ((cache+next, allowedBefore.head._1) :: acc).reverse
@@ -38,8 +42,14 @@ trait Scanner {
         /* generate possible steps: */
         val allowed = filterTokens(next, cache, allowedBefore)
         allowed match {
-          // append new token, clear cache, reset states
-          case Nil => parseStep(text.tail, text.head, next.toString, filterTokens(next, "", initialTokens), (cache, allowedBefore.head._1) :: acc)
+          // cant add any more chars to current available states, there are two ways:
+          // a) char might be a neutral one for a state, eg. whitespaces
+          // b) we end the current token and start building next
+          // problem:  spacje wymieszane z identyfikatorem - feeding tylko dla pustego kesza?
+          case Nil => feedStates(next, allowedBefore) match {
+            case Nil => parseStep(text.tail, text.head, next.toString, filterTokens(next, "", initialTokens), (cache, allowedBefore.head._1) :: acc)
+            case states => parseStep(text.tail, text.head, )
+          } 
                     
           case tokens => parseStep(text.tail, text.head, cache + next, tokens, acc ) 
         }
