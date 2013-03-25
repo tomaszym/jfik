@@ -1,3 +1,5 @@
 package pl.edu.agh.student.shy.scanner
 
-trait State
+abstract class State(line: Int, col: Int) {
+  def eat_?(c: Char): Option[State] = None
+}

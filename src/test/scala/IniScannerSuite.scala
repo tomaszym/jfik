@@ -6,7 +6,7 @@ class IniScannerSuite extends FunSuite {
  
   test("parses simple CORRECT synthetic file") {
 	
-    val txt = "[section]label=12"
+    val txt = "[  section ]label=12"
     val res = IniParser.parse(txt)
     
     assert(res === List(
@@ -18,7 +18,7 @@ class IniScannerSuite extends FunSuite {
         ("12", Number)
     ))
   }
-  test("returns error on incorrect string") {
+  test("ini file with string") {
 	
     val txt = """[section]label="asdf""" // missing "
     val res = IniParser.parse(txt)
@@ -29,7 +29,7 @@ class IniScannerSuite extends FunSuite {
         ("]", BracketR),
         ("label", Identifier),
         ("=", Eq),
-        (""""asdf""", Error)
+        (""""asdf"""", StringToken)
     ))
   }
 }

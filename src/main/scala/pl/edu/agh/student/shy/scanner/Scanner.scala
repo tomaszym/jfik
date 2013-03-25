@@ -31,7 +31,7 @@ trait Scanner {
           (token, token.t(next, cache, state)) 
         } filter { case (t, s) => s.isDefined } map { case (t,s) => (t, s.get)} 
     }
-    println(allowedBefore)
+
     text match {
       case "" => ((cache+next, allowedBefore.head._1) :: acc).reverse
       case more => {
