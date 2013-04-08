@@ -35,7 +35,7 @@ trait Scanner {
       states .map    { case (t, s) => (t, s.eat_?(c))} 
              .filter { case (t, opt) => opt.isDefined } 
              .map    { case (t, opt) => (t, opt.get)}
-
+    println(next.toString+ ":" + allowedBefore)
     text match {
       case "" => ((cache+next, allowedBefore.head._1) :: acc).reverse
       case more => {
@@ -45,17 +45,16 @@ trait Scanner {
           // cant add any more chars to current available states, there are two ways:
           // a) char might be a neutral one for a state, eg. whitespaces
           // b) we end the current token and start building next
-          // problem:  spacje wymieszane z identyfikatorem - feeding tylko dla pustego kesza?
-          case Nil => feedStates(next, allowedBefore) match {
-            case Nil => parseStep(text.tail, text.head, next.toString, filterTokens(next, "", initialTokens), (cache, allowedBefore.head._1) :: acc)
-            case states => parseStep(text.tail, text.head, )
-          } 
+          case Nil if cache == "" => feedStates(next, allowedBefore) match {
+            case Nil => parseStep(text.tail, text.head, "", allowedBefore = filterTokens(next, "", initialTokens), acc = (cache, allowedBefore.head._1) :: acc)
+            case tokens => parseStep(text.tail, text.head, "", allowedBefore = tokens, acc = acc)
+          }
                     
           case tokens => parseStep(text.tail, text.head, cache + next, tokens, acc ) 
         }
       }
     }
-
+    
   }
 
 }
